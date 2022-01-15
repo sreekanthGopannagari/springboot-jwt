@@ -9,9 +9,11 @@ import com.consyn.app.dao.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 	 
-	Optional<User> findByEmail(String email);
+	Optional<User> findByEmail(String userId);
 
 	public User save(User user);
+	
+	boolean existsByEmail(String userId);
 
- 
+
 }

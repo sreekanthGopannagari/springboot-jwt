@@ -46,14 +46,14 @@ public class UserController extends BaseController {
 
 	}
 
-	@GetMapping(path = "/customer/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Get customer")
-	public ResponseEntity<Optional<User>> getCustomer(@ApiParam(value = "userId") @PathVariable String userId) {
+	@GetMapping(path = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Get user details")
+	public ResponseEntity<Optional<User>> getCustomer(@ApiParam(value = "id") @PathVariable String id) {
 
 		LOG.info("Inside CusomerController: getCustomer at {}", System.currentTimeMillis());
 		try {
-			validateRequest(userId, true, false);
-			Optional<User> user = customerService.getUser(userId);
+			validateRequest(id, true, false);
+			Optional<User> user = customerService.getUser(id);
 			return new ResponseEntity<>(user, HttpStatus.OK);
 		} finally {
 			LOG.info("Exiting  CusomerController:getCustomers at {}", System.currentTimeMillis());
@@ -61,8 +61,8 @@ public class UserController extends BaseController {
 
 	}
 
-	@GetMapping(path = "/customers", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Get all customers")
+	@GetMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Get all users list")
 	public ResponseEntity<List<User>> getCustomers(@ApiParam(value = "userId") @RequestParam String userId) {
 
 		LOG.info("Inside CusomerController:getCustomers at {}", System.currentTimeMillis());
@@ -77,14 +77,22 @@ public class UserController extends BaseController {
 
 	@PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "User signup")
-	public ResponseEntity<User> saveUser(@ApiParam(value = "user") @RequestBody User user) throws Exception {
+	public ResponseEntity<String> saveUser(@ApiParam(value = "user") @RequestBody User user) throws Exception {
 		LOG.info("Inside CusomerController:signup at {}", System.currentTimeMillis());
 		try {
-			User user1 = customerService.register(user);
-			return new ResponseEntity<>(user1, HttpStatus.OK);
+			if (customerService.existsByUserId(user.getEmail())) {
+			
+				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with that username already exists.");
+			} else {
+
+				User user1 = customerService.register(user);
+		        return ResponseEntity.status(HttpStatus.OK).body("User added Successfully");
+
+			}
 		} finally {
 			LOG.info("Exiting  CusomerController:signup at {}", System.currentTimeMillis());
 
 		}
+
 	}
 }

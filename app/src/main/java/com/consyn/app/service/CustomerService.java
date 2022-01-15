@@ -12,4 +12,7 @@ public interface CustomerService {
 	public Optional<User> getUser(String userId);
 	
 	public User register(User request);
+	
+	boolean existsByUserId(String userId);
+
 }
