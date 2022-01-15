@@ -17,9 +17,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	CustomerService customerService;
 
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 				
-		 Optional<User> user = customerService.getCustomer(email);
+		 Optional<User> user = customerService.getUser(userId);
 
 		if (user.isPresent()) {
 			return UserDetailsImpl.build(user);

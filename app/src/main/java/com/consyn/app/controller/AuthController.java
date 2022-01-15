@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.consyn.app.constants.Constants;
 import com.consyn.app.model.JwtResponse;
 import com.consyn.app.model.LoginRequest;
@@ -26,8 +25,7 @@ import org.slf4j.Logger;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-
-@CrossOrigin(origins ="*",maxAge=3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
 @Api(value = "AuthContoller")
@@ -46,7 +44,8 @@ public class AuthController {
 
 	@PostMapping(path = "/login")
 	@ApiOperation(value = "Login User and generate JWT token", response = JwtResponse.class)
-	public ResponseEntity<JwtResponse> authenticateUser(@RequestBody (required=true) LoginRequest loginRequest) throws Exception {
+	public ResponseEntity<JwtResponse> authenticateUser(@RequestBody(required = true) LoginRequest loginRequest)
+			throws Exception {
 
 		LOG.info("Inside AuthConntroller:authenticateUser {} at {}", loginRequest.getEmail(),
 				System.currentTimeMillis());
@@ -58,19 +57,19 @@ public class AuthController {
 			String jwt = jwtUtils.generateToken(authentication);
 
 			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-			return ResponseEntity.ok(new JwtResponse(jwt,userDetails.getUser(),Constants.USER_AUTHENTICATED));
+			return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUser(), Constants.USER_AUTHENTICATED));
 
-		} catch (DisabledException disabledException){
-			LOG.error("User account is  inactive", loginRequest.getEmail(),disabledException);
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse(null,null,Constants.USER_INACTIVE));
-			
+		} catch (DisabledException disabledException) {
+			LOG.error("User account is  inactive", loginRequest.getEmail(), disabledException);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(new JwtResponse(null, null, Constants.USER_INACTIVE));
+
+		} catch (BadCredentialsException badCreds) {
+			LOG.error("Invalid Credentials", loginRequest.getEmail(), badCreds);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(new JwtResponse(null, null, Constants.USER_INVALID_CREDENTIALS));
+
 		}
-		catch (BadCredentialsException badCreds){
-			LOG.error("Invalid Credentials", loginRequest.getEmail(),badCreds);
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse(null,null,Constants.USER_INVALID_CREDENTIALS));
-			
-		}
-		
 
 	}
 

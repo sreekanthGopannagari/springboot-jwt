@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.consyn.app.dao.User;
+import com.consyn.app.exception.UserNotFoundException;
 import com.consyn.app.repository.UserRepository;
 import com.consyn.app.security.util.MLMD5PasswordEncoder;
 import com.consyn.app.service.CustomerService;
@@ -24,16 +25,27 @@ public class CustomerServiceImpl implements CustomerService {
 	MLMD5PasswordEncoder passwordEncoder;
 
 	@Override
-	public List<User> getCustomers() {
+	public List<User> getUsers() {
 		LOG.info("Inside CustomerServiceImpl:getCustomers at {}", System.currentTimeMillis());
 		List<User> users = userRepository.findAll();
 		return users;
 	}
 
 	@Override
-	public Optional<User> getCustomer(String email) {
+	public Optional<User> getUser(String userId) {
 		LOG.info("Inside CustomerServiceImpl:getCustomer at {}", System.currentTimeMillis());
-		return userRepository.findByEmail(email);
+		try {
+			return userRepository.findByEmail(userId);
+		}
+		catch(Exception e) {
+			LOG.error("Error fetching user details",e);
+			throw new UserNotFoundException(userId);
+		}
+	  finally {
+		  LOG.info("Exiting CustomerServiceImpl:getUser", System.currentTimeMillis());
+	  }
+		
+		
 	}
 
 	@Override

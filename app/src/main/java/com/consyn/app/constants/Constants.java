@@ -1,7 +1,10 @@
 package com.consyn.app.constants;
 
 public class Constants {
-
+   
+	public static  final String USER_TYPE_APP ="USER";
+	public static final String  USER_TYPE_ADMIN= "ADMIN";
+	
 	public static final String TOKEN_TYPE_KEY = "TYPE";
 	public static final String TOKEN_TYPE_LOGIN = "LOGIN";
 	public static final String TOKEN_TYPE_PWD_RESET = "PASSWORD_RESET";

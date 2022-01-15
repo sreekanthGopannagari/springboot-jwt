@@ -7,9 +7,9 @@ import com.consyn.app.dao.User;
 
 public interface CustomerService {
 
-	public List<User> getCustomers();
+	public List<User> getUsers();
 
-	public Optional<User> getCustomer(String email);
+	public Optional<User> getUser(String userId);
 	
 	public User register(User request);
 }

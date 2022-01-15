@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.consyn.app.dao.User;
@@ -30,9 +31,9 @@ import io.swagger.annotations.ApiParam;
 @RestController
 @RequestMapping()
 @Api(value = "CustomerController")
-public class CustomerController {
+public class UserController extends BaseController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CustomerController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	CustomerService customerService;
@@ -45,21 +46,29 @@ public class CustomerController {
 
 	}
 
-	@GetMapping(path = "/customer/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/customer/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer")
-	public ResponseEntity<Optional<User>> getCustomer(@ApiParam(value = "username") @PathVariable String email) {
+	public ResponseEntity<Optional<User>> getCustomer(@ApiParam(value = "userId") @PathVariable String userId) {
+
 		LOG.info("Inside CusomerController: getCustomer at {}", System.currentTimeMillis());
-		Optional<User> user = customerService.getCustomer(email);
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		try {
+			validateRequest(userId, true, false);
+			Optional<User> user = customerService.getUser(userId);
+			return new ResponseEntity<>(user, HttpStatus.OK);
+		} finally {
+			LOG.info("Exiting  CusomerController:getCustomers at {}", System.currentTimeMillis());
+		}
 
 	}
 
 	@GetMapping(path = "/customers", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get all customers")
-	public ResponseEntity<List<User>> getCustomers() {
+	public ResponseEntity<List<User>> getCustomers(@ApiParam(value = "userId") @RequestParam String userId) {
+
 		LOG.info("Inside CusomerController:getCustomers at {}", System.currentTimeMillis());
+		validateRequest(userId, true, false);
 		try {
-			List<User> users = customerService.getCustomers();
+			List<User> users = customerService.getUsers();
 			return new ResponseEntity<>(users, HttpStatus.OK);
 		} finally {
 			LOG.info("Exiting  CusomerController:getCustomers at {}", System.currentTimeMillis());
@@ -68,7 +77,7 @@ public class CustomerController {
 
 	@PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "User signup")
-	public ResponseEntity<User> saveUser(@RequestBody User user) throws Exception {
+	public ResponseEntity<User> saveUser(@ApiParam(value = "user") @RequestBody User user) throws Exception {
 		LOG.info("Inside CusomerController:signup at {}", System.currentTimeMillis());
 		try {
 			User user1 = customerService.register(user);
